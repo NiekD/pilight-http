@@ -59,7 +59,7 @@ IF ... THEN http GET http://192.168.2.10/ DEVICE myresult
 
 IF ... THEN http GET http://192.168.2.10/ PARAM c= mysensor.state DEVICE myresult
 
-IF ... THEN http GET http://192.168.2.10/ MIMETYPE text/html DEVICE myresult
+IF ... THEN http GET http://192.168.2.10/ PARAM command=start MIMETYPE text/html DEVICE myresult
 
 IF myresult.state == ready THEN ...
 
