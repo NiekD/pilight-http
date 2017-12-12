@@ -32,7 +32,7 @@ Configuration:
 Note the difference between state and code. State doesn't tell if the http request was succesful, it just tells that the request is busy or ready. If state is "ready", you can use code to tell if the request succeeded or not.
 
 If you want to make other rules act upon the result of the http(s) request, you can use the state change of the generic_http_device to trigger those rules, just like you can do with the state of other devices. 
-The state will be either "busy" or "ready". The state chages to "busy"  when the http action starts and back to "ready" when the http action finishes. When the state is "ready", the generic_http_result device contains values related to the latest http request.
+The state will be either "busy" or "ready". The state changes to "busy"  when the http action starts and back to "ready" when the http action finishes. When the state is "ready", the generic_http_result device contains values related to the latest http request.
 
 
 ## Usage
