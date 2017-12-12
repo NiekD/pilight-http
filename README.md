@@ -71,3 +71,20 @@ The action will automaticly remove all spaces from both url and parameters befor
 ## Installation
 All addons can be compiled as modules to be installed in the appropriate pilight folders. 
 Always use pilight development V7, which is the code base for pilight V8.
+
+Clone this repository or download the individual source files to your system.
+Then compile them as modules. Note that pilight develoment V7 is required for this.
+```
+service pilight stop
+
+gcc -fPIC -shared <folder containing source files>/generic_http_result.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http_result.so -DMODULE=1
+ 
+cp generic_http_result.so /usr/local/pilight/protocols/
+ 
+gcc -fPIC -shared <folder containing source files>/http.c -Ilibs/pilight/events/ -Iinc/ -o http.so -DMODULE=1
+ 
+cp generic_http.so /usr/local/pilight/actions/ 
+
+service pilight start
+ 
+```
