@@ -37,9 +37,9 @@ The state will be either "busy" or "ready". The state chages to "busy"  when the
 
 ## Usage
 ```
-IF ... THEN http GET|POST <url> [PARAM <parameters>] [DEVICE <generic_http_result device>]
+IF ... THEN http GET|POST <url> [PARAM <parameters>] [MIMETYPE <mimetype>] [DEVICE <generic_http_result device>]
 ```
-GET or POST  with url are mandatory, PARAM and DEVICE are optional.
+GET or POST  with url are mandatory, PARAM, MIMETYPE and DEVICE are optional.
 Url and parameters can be strings or device values or combinations of both.
 
 DEVICE must be a generic_http_result device.
@@ -58,6 +58,8 @@ IF ... THEN http GET http://192.168.2.10/ PARAM command=start&reply=yes
 IF ... THEN http GET http://192.168.2.10/ DEVICE myresult
 
 IF ... THEN http GET http://192.168.2.10/ PARAM c= mysensor.state DEVICE myresult
+
+IF ... THEN http GET http://192.168.2.10/ MIMETYPE text/html DEVICE myresult
 
 IF myresult.state == ready THEN ...
 
