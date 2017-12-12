@@ -3,14 +3,68 @@ This repository contains an addon enabling http requests from your rules and han
 
 This addon will replace the webswitch protocol I published earlier.
 
-One action:
+# http action
+The http action can be used in pilight rules to send HTTP POST or GET requests, either with or without parameters. 
 
-* http, enables you to call remote services via HTTP(S) GET or POST.
+# generic_http_result protocol
+The state and the result of the request can optionally be stored in a generic_http_result device.
 
-One protocol:
+Configuration:
+```
+"http_response": {
+			"protocol": [ "generic_http_result" ],
+			"id": [{
+				"id": 1
+			}],
+			"mimetype": "text/html",
+			"size": 0,
+			"code": 0,
+			"data": "test",
+			"state": "ready"
+		},
+```
+* Mimetype is the mimetype returned by the http request
+* Size is the number of bytes of the data returned
+* Code is the http code resulting from the http request (200 means request succeeded)
+* Data is the payload returned
+* State is the state of the http request
 
-* generic_http_result, which can indicate the state of the http action and store its results.
+Note the difference between state and code. State doesn't tell if the http request was succesful, it just tells that the request is busy or ready. If state is "ready", you can use code to tell if the request succeeded or not.
 
+If you want to make other rules act upon the result of the http(s) request, you can use the state change of the generic_http_device to trigger those rules, just like you can do with the state of other devices. 
+The state will be either "busy" or "ready". The state chages to "busy"  when the http action starts and back to "ready" when the http action finishes. When the state is "ready", the generic_http_result device contains values related to the latest http request.
+
+
+## Usage
+```
+IF ... THEN http GET|POST <url> [PARAM <parameters>] [DEVICE <generic_http_result device>]
+```
+GET or POST  with url are mandatory, PARAM and DEVICE are optional.
+Url and parameters can be strings or device values or combinations of both.
+
+DEVICE must be a generic_http_result device.
+
+*N.B. A trailing slash (/) is required for the url if it refers to a path as shown in the examples below.*
+
+Some examples
+
+```
+IF ... THEN http GET http://192.168.2.10/test.cgi
+
+IF ... THEN http POST https://192.168.2.10/ 
+
+IF ... THEN http GET http://192.168.2.10/ PARAM command=start&reply=yes
+
+IF ... THEN http GET http://192.168.2.10/ DEVICE myresult
+
+IF ... THEN http GET http://192.168.2.10/ PARAM c= mysensor.state DEVICE myresult
+
+IF myresult.state == ready THEN ...
+
+IF myresult.state == ready AND myresult.code == 200 THEN ...
+```
+Note the space between the "=" sign and the device variable names in the examples. These spaces are required for the eventing system to recognize the device variable (or function). 
+The action will automaticly remove all spaces from both url and parameters before the request is sent. If you need to retain certain spaces in the parameters you can replace each one of them with %20
 
 ## Installation
 All addons can be compiled as modules to be installed in the appropriate pilight folders. 
