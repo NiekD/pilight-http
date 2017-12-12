@@ -17,8 +17,8 @@ Configuration:
 				"id": 1
 			}],
 			"mimetype": "text/html",
-			"size": 0,
-			"code": 0,
+			"size": 4,
+			"code": 200,
 			"data": "test",
 			"state": "ready"
 		},
