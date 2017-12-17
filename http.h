@@ -16,13 +16,13 @@
 	along with pilight. If not, see	<http://www.gnu.org/licenses/>
 */
 
-#ifndef _EVENT_ACTION_HTTP_DEV_H_
-#define _EVENT_ACTION_HTTP_DEV_H_
+#ifndef _EVENT_ACTION_HTTP_H_
+#define _EVENT_ACTION_HTTP_H_
 
 #include "../action.h"
 
-struct event_actions_t *action_http_dev;
+struct event_actions_t *action_http;
 
-void actionHttp_devInit(void);
+void actionHttpInit(void);
 
 #endif

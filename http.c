@@ -30,7 +30,7 @@
 #include "../../core/pilight.h"
 #include "../../core/http.h"
 #include "../../core/common.h"
-#include "http_dev.h"
+#include "http.h"
 
 
 typedef struct settings_t {
@@ -68,7 +68,7 @@ static int checkArguments(struct rules_actions_t *obj) {
 	struct JsonNode *jchild = NULL;
 	int nrvalues = 0, match =0;
 	char *output = json_stringify(obj->parsedargs, NULL);
-		logprintf(LOG_INFO, "http_dev : parsedargs=%s", output);
+		logprintf(LOG_INFO, "http : parsedargs=%s", output);
 
 
 	jpost = json_find_member(obj->parsedargs, "POST");
@@ -78,11 +78,11 @@ static int checkArguments(struct rules_actions_t *obj) {
 	jmimetype = json_find_member(obj->parsedargs, "MIMETYPE");
 	
 	if(jpost == NULL && jget == NULL) {
-		logprintf(LOG_ERR, "http_dev action is missing a \"GET\" or \"POST\"");
+		logprintf(LOG_ERR, "http action is missing a \"GET\" or \"POST\"");
 		return -1;
 	}
 	if(jpost != NULL && jget != NULL) {
-		logprintf(LOG_ERR, "http_dev action must contain either a \"GET\" or a \"POST\"");
+		logprintf(LOG_ERR, "http action must contain either a \"GET\" or a \"POST\"");
 		return -1;
 	}	
 	nrvalues = 0;
@@ -96,7 +96,7 @@ static int checkArguments(struct rules_actions_t *obj) {
 			}
 		}
 		if(nrvalues != 1) {
-			logprintf(LOG_ERR, "http_dev action: \"POST\" only takes one argument");
+			logprintf(LOG_ERR, "http action: \"POST\" only takes one argument");
 			return -1;
 		}
 	}
@@ -111,7 +111,7 @@ static int checkArguments(struct rules_actions_t *obj) {
 			}
 		}
 		if(nrvalues != 1) {
-			logprintf(LOG_ERR, "http_dev action: \"GET\" only takes one argument");
+			logprintf(LOG_ERR, "http action: \"GET\" only takes one argument");
 			return -1;
 		}	
 	}
@@ -126,7 +126,7 @@ static int checkArguments(struct rules_actions_t *obj) {
 			}
 		}
 		if(nrvalues != 1) {
-			logprintf(LOG_ERR, "http_dev action: \"PARAM\" only takes one argument");
+			logprintf(LOG_ERR, "http action: \"PARAM\" only takes one argument");
 			return -1;
 		}	
 	}
@@ -141,12 +141,12 @@ static int checkArguments(struct rules_actions_t *obj) {
 			}
 		}
 		if(nrvalues != 1) {
-			logprintf(LOG_ERR, "http_dev action: \"MIMETYPE\" only takes one argument");
+			logprintf(LOG_ERR, "http action: \"MIMETYPE\" only takes one argument");
 			return -1;
 		}	
 	} else {
 		if(jpost != NULL) {
-			logprintf(LOG_ERR, "http_dev action: a \"MIMETYPE\" is required for \"POST\" requests");
+			logprintf(LOG_ERR, "http action: a \"MIMETYPE\" is required for \"POST\" requests");
 			return -1;
 		}
 	}
@@ -156,7 +156,7 @@ static int checkArguments(struct rules_actions_t *obj) {
 	if(jdevice != NULL) {
 		char *output = json_stringify(jdevice, NULL);
 
-			logprintf(LOG_INFO, "http_dev : jdevice=%s", output);
+			logprintf(LOG_INFO, "http : jdevice=%s", output);
 	
 		if((jvalues = json_find_member(jdevice, "value")) != NULL) {
 			jchild = json_first_child(jvalues);
@@ -166,11 +166,11 @@ static int checkArguments(struct rules_actions_t *obj) {
 			}
 		}
 		if(nrvalues != 1) {
-			logprintf(LOG_ERR, "http_dev action: \"DEVICE\" only takes one argument");
+			logprintf(LOG_ERR, "http action: \"DEVICE\" only takes one argument");
 			return -1;
 		}
 		jchild = json_first_child(jvalues);
-		logprintf(LOG_INFO, "http_dev action: device=%s", jchild->string_);
+		logprintf(LOG_INFO, "http action: device=%s", jchild->string_);
 	
 		struct devices_t *dev = NULL;
 		if(devices_get(jchild->string_, &dev) == 0) {
@@ -184,11 +184,11 @@ static int checkArguments(struct rules_actions_t *obj) {
 				protocols = protocols->next;
 			}
 			if(match == 0) {
-				logprintf(LOG_ERR, "http_dev action: \"DEVICE\" must be a generic_http_result device");
+				logprintf(LOG_ERR, "http action: \"DEVICE\" must be a generic_http_result device");
 				return -1;
 			}
 		} else {
-			logprintf(LOG_ERR, "http_dev action: \"DEVICE\" device \"%s\" doesn't exist", jchild->string_);
+			logprintf(LOG_ERR, "http action: \"DEVICE\" device \"%s\" doesn't exist", jchild->string_);
 			return -1;
 		}
 	}
@@ -202,7 +202,7 @@ static void callback(int code, char *data, int size, char *type, void *userdata)
 	if (wnode->device != NULL && strlen(wnode->device) > 0) {
 		if(devices_get(wnode->device, &dev) == 0) {
 			if(size > 290) {
-				logprintf(LOG_NOTICE, "http_dev action response size %i is too big (limit is 290), response truncated", size);
+				logprintf(LOG_NOTICE, "http action response size %i is too big (limit is 290), response truncated", size);
 				data[291] = '\0';
 				logprintf(LOG_DEBUG, "truncated response to: \"%s\"", data);
 			}		
@@ -214,16 +214,16 @@ static void callback(int code, char *data, int size, char *type, void *userdata)
 			if(pilight.control != NULL) {
 				pilight.control(dev, "ready", json_first_child(jobj), ACTION);
 				json_delete(jobj);
-				logprintf(LOG_INFO, "http_dev action updated generic_http_result \"%s\"", wnode->device);
+				logprintf(LOG_INFO, "http action updated generic_http_result \"%s\"", wnode->device);
 			}	
 		} else {
-			logprintf(LOG_DEBUG, "http_dev action succeeded with no \"DEVICE\" defined, response (if any) discarded");			
+			logprintf(LOG_DEBUG, "http action succeeded with no \"DEVICE\" defined, response (if any) discarded");			
 		}
 	}
 	if(code == 200) {
-		logprintf(LOG_DEBUG, "http_dev action calling \"%s\" succeeded, received \"%s\"", wnode->url, data);
+		logprintf(LOG_DEBUG, "http action calling \"%s\" succeeded, received \"%s\"", wnode->url, data);
 	} else {
-		 logprintf(LOG_NOTICE, "http_dev action calling \"%s\" failed (%i)", wnode->url, code);
+		 logprintf(LOG_NOTICE, "http action calling \"%s\" failed (%i)", wnode->url, code);
 	}
 	FREE(wnode->url);
 	if (wnode->device != NULL) {
@@ -261,7 +261,7 @@ static void *thread(void *param) {
 
 	struct devices_t *dev = NULL;
 
-	action_http_dev->nrthreads++;
+	action_http->nrthreads++;
 	
 	wnode->device = NULL;
 	wnode->url = NULL;
@@ -345,9 +345,9 @@ static void *thread(void *param) {
 			http_get_content(wnode->url, callback, wnode);
 		} 
 	}
-	logprintf(LOG_DEBUG, "http_dev action called %s", wnode->url);
+	logprintf(LOG_DEBUG, "http action called %s", wnode->url);
 
-	action_http_dev->nrthreads--;
+	action_http->nrthreads--;
 
 	return (void *)NULL;
 }
@@ -362,28 +362,28 @@ static int run(struct rules_actions_t *obj) {
 #if !defined(MODULE) && !defined(_WIN32)
 __attribute__((weak))
 #endif
-void actionHttp_devInit(void) {
-	event_action_register(&action_http_dev, "http_dev");
+void actionHttpInit(void) {
+	event_action_register(&action_http, "http");
 
-	options_add(&action_http_dev->options, 'a', "POST", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
-	options_add(&action_http_dev->options, 'b', "GET", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
-	options_add(&action_http_dev->options, 'd', "DEVICE", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
-	options_add(&action_http_dev->options, 'm', "MIMETYPE", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
-	options_add(&action_http_dev->options, 'p', "PARAM", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
+	options_add(&action_http->options, 'a', "POST", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
+	options_add(&action_http->options, 'b', "GET", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
+	options_add(&action_http->options, 'd', "DEVICE", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
+	options_add(&action_http->options, 'm', "MIMETYPE", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
+	options_add(&action_http->options, 'p', "PARAM", OPTION_OPT_VALUE, DEVICES_OPTIONAL, JSON_STRING, NULL, NULL);
 
-	action_http_dev->run = &run;
-	action_http_dev->checkArguments = &checkArguments;
+	action_http->run = &run;
+	action_http->checkArguments = &checkArguments;
 }
 
 #if defined(MODULE) && !defined(_WIN32)
 void compatibility(struct module_t *module) {
-	module->name = "http_dev";
+	module->name = "http";
 	module->version = "0.3";
 	module->reqversion = "7.0";
 	module->reqcommit = "87";
 }
 
 void init(void) {
-	actionHttp_devInit();
+	actionHttpInit();
 }
 #endif
