@@ -1,5 +1,5 @@
 # pilight-http
-This repository contains an addon enabling http requests from your rules and handling of the result for pilight 8.
+This repository contains an addon enabling http requests from your rules and handling of the result for pilight 8.1.
 
 This addon will replace the webswitch protocol I published earlier.
 
@@ -49,31 +49,35 @@ DEVICE must be a generic_http_result device.
 Some examples
 
 ```
-IF ... THEN http GET http://192.168.2.10/test.cgi
+IF ... THEN http GET 'http://192.168.2.10/'
 
-IF ... THEN http POST https://192.168.2.10/ 
+IF ... THEN http GET http://url/path/page.html
 
-IF ... THEN http GET http://192.168.2.10/ PARAM command=start&reply=yes
+IF ... THEN http POST 'https://192.168.2.10/' 
 
-IF ... THEN http GET http://192.168.2.10/ DEVICE myresult
+IF ... THEN http GET 'http://192.168.2.10/test.cgi'
 
-IF ... THEN http GET http://192.168.2.10/ PARAM c= mysensor.state DEVICE myresult
+IF ... THEN http GET 'http://192.168.2.10/' PARAM command=start&reply=yes
 
-IF ... THEN http GET http://192.168.2.10/ PARAM command=start MIMETYPE text/html DEVICE myresult
+IF ... THEN http 'GET http://192.168.2.10/' DEVICE myresult
+
+IF ... THEN http GET 'http://192.168.2.10/' PARAM 'c=' . mysensor.state DEVICE myresult
+
+IF ... THEN http GET 'http://192.168.2.10/' PARAM command=start MIMETYPE 'text/html' DEVICE myresult
 
 IF myresult.state == ready THEN ...
 
 IF myresult.state == ready AND myresult.code == 200 THEN ...
 ```
-Note the space between the "=" sign and the device variable names in the examples. These spaces are required for the eventing system to recognize the device variable (or function). 
-The action will automaticly remove all spaces from both url and parameters before the request is sent. If you need to retain certain spaces in the parameters you can replace each one of them with %20
+
+Note that in pilight 8.1 you have to put strings containing dots (.) between quotes and that strings and device values need to be concatenated using the concatenation character (.) 
 
 ## Installation
 All addons can be compiled as modules to be installed in the appropriate pilight folders. 
-Always use pilight development V7, which is the code base for pilight V8.
+Install pilight manually from the staging branch, which is the code base for pilight V8.1.
 
 Clone this repository or download the individual source files to your system.
-Then compile them as modules. Note that pilight develoment V7 is required for this.
+Then compile them as modules.
 ```
 service pilight stop
 
