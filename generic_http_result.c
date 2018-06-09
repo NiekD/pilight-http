@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2017 CurlyMo & Niek
+	Copyright (C) 2018 CurlyMo & Niek
 
 	This file is part of pilight.
 
@@ -67,7 +67,7 @@ static int createCode(JsonNode *code) {
 	json_find_number(code, "size", &rsize);
 	json_find_number(code, "code", &rcode);
 
-	if(id == -1 || state == -1) {
+	if(id == -1 || rstate == -1) {
 		logprintf(LOG_ERR, "generic_http_result: insufficient number of arguments");
 		return EXIT_FAILURE;
 	} else {
