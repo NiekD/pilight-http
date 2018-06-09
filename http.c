@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2017 CurlyMo & Niek
+	Copyright (C) 2018 CurlyMo & Niek
 
 	This file is part of pilight.
 
@@ -67,15 +67,22 @@ static int checkArguments(struct rules_actions_t *obj) {
 	struct JsonNode *jvalues = NULL;
 	struct JsonNode *jchild = NULL;
 	int nrvalues = 0, match =0;
-	char *output = json_stringify(obj->parsedargs, NULL);
-		logprintf(LOG_INFO, "http : parsedargs=%s", output);
+	
+	if(obj == NULL) {
+		/* Internal error */
+		return -1;
+	}
 
+	if(obj->arguments == NULL) {
+		/* Internal error */
+		return -1;
+	}
 
-	jpost = json_find_member(obj->parsedargs, "POST");
-	jget = json_find_member(obj->parsedargs, "GET");
-	jdevice = json_find_member(obj->parsedargs, "DEVICE");
-	jparam = json_find_member(obj->parsedargs, "PARAM");
-	jmimetype = json_find_member(obj->parsedargs, "MIMETYPE");
+	jpost = json_find_member(obj->arguments, "POST");
+	jget = json_find_member(obj->arguments, "GET");
+	jdevice = json_find_member(obj->arguments, "DEVICE");
+	jparam = json_find_member(obj->arguments, "PARAM");
+	jmimetype = json_find_member(obj->arguments, "MIMETYPE");
 	
 	if(jpost == NULL && jget == NULL) {
 		logprintf(LOG_ERR, "http action is missing a \"GET\" or \"POST\"");
@@ -154,10 +161,7 @@ static int checkArguments(struct rules_actions_t *obj) {
 
 	nrvalues = 0;
 	if(jdevice != NULL) {
-		char *output = json_stringify(jdevice, NULL);
 
-			logprintf(LOG_INFO, "http : jdevice=%s", output);
-	
 		if((jvalues = json_find_member(jdevice, "value")) != NULL) {
 			jchild = json_first_child(jvalues);
 			while(jchild) {
@@ -170,7 +174,6 @@ static int checkArguments(struct rules_actions_t *obj) {
 			return -1;
 		}
 		jchild = json_first_child(jvalues);
-		logprintf(LOG_INFO, "http action: device=%s", jchild->string_);
 	
 		struct devices_t *dev = NULL;
 		if(devices_get(jchild->string_, &dev) == 0) {
@@ -214,7 +217,6 @@ static void callback(int code, char *data, int size, char *type, void *userdata)
 			if(pilight.control != NULL) {
 				pilight.control(dev, "ready", json_first_child(jobj), ACTION);
 				json_delete(jobj);
-				logprintf(LOG_INFO, "http action updated generic_http_result \"%s\"", wnode->device);
 			}	
 		} else {
 			logprintf(LOG_DEBUG, "http action succeeded with no \"DEVICE\" defined, response (if any) discarded");			
@@ -223,7 +225,9 @@ static void callback(int code, char *data, int size, char *type, void *userdata)
 	if(code == 200) {
 		logprintf(LOG_DEBUG, "http action calling \"%s\" succeeded, received \"%s\"", wnode->url, data);
 	} else {
-		 logprintf(LOG_NOTICE, "http action calling \"%s\" failed (%i)", wnode->url, code);
+		logprintf(LOG_NOTICE, "http action calling \"%s\" failed (%i)", wnode->url, code);
+		logprintf(LOG_NOTICE, "data: %s, size: %d, mimetype: %s", data, size, type);
+		 
 	}
 	FREE(wnode->url);
 	if (wnode->device != NULL) {
@@ -243,7 +247,7 @@ static void callback(int code, char *data, int size, char *type, void *userdata)
 static void *thread(void *param) {
 	struct rules_actions_t *pth = (struct rules_actions_t *)param;
 	struct settings_t *wnode = MALLOC(sizeof(struct settings_t));
-	struct JsonNode *arguments = pth->parsedargs;
+	struct JsonNode *arguments = pth->arguments;
 	struct JsonNode *jpost = NULL;
 	struct JsonNode *jget = NULL;
 	struct JsonNode *jparam = NULL;
@@ -288,11 +292,14 @@ static void *thread(void *param) {
 			jval3 = json_find_element(jvalues3, 0);
 		}
 		if(jval3 != NULL && jval3->tag == JSON_STRING) {
-			if((wnode->param = MALLOC(strlen(jval3->string_) + 1)) == NULL) {
+			
+			if((wnode->param = MALLOC(1024)) == NULL) {
+//			if((wnode->param = MALLOC(strlen(jval3->string_) + 1)) == NULL) {
 				fprintf(stderr, "out of memory\n");
 				exit(EXIT_FAILURE);
 			}
 			strcpy(wnode->param, jval3->string_); 
+			str_replace(" ", "%20", &wnode->param);
 		}
 	}
 	if(jmimetype != NULL) {
@@ -315,12 +322,9 @@ static void *thread(void *param) {
 			strcpy(wnode->device,jval5->string_) ;
 			if (wnode->device != NULL && strlen(wnode->device) > 0) {
 				if(devices_get(wnode->device, &dev) == 0) {
-//					jobj = json_mkobject();
-//					json_append_member(jobj, "state", json_mkstring("busy"));
 					if(pilight.control != NULL) {
 						pilight.control(dev, "busy", NULL, ACTION);
 						json_delete(jobj);
-						logprintf(LOG_NOTICE, "http action switched device \"%s\" to \"busy\"", wnode->device);
 					}
 				}
 			}
@@ -331,6 +335,9 @@ static void *thread(void *param) {
 		logprintf(LOG_ERR, "out of memory\n");
 		exit(EXIT_FAILURE);
 	}
+	
+	
+	
 	if(jpost != NULL && jpost->tag == JSON_STRING) { //POST REQUEST
 		strcpy(wnode->url, strip(jpost->string_)); 
 
@@ -378,7 +385,7 @@ void actionHttpInit(void) {
 #if defined(MODULE) && !defined(_WIN32)
 void compatibility(struct module_t *module) {
 	module->name = "http";
-	module->version = "0.3";
+	module->version = "0.4";
 	module->reqversion = "7.0";
 	module->reqcommit = "87";
 }
