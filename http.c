@@ -180,14 +180,14 @@ static int checkArguments(struct rules_actions_t *obj) {
 			struct protocols_t *protocols = dev->protocols;
 			match = 0;
 			while(protocols) {
-				if(strcmp(protocols->name, "generic_http_result") == 0) {
+				if(strcmp(protocols->name, "generic_http") == 0) {
 					match = 1;
 					break;
 				}
 				protocols = protocols->next;
 			}
 			if(match == 0) {
-				logprintf(LOG_ERR, "http action: \"DEVICE\" must be a generic_http_result device");
+				logprintf(LOG_ERR, "http action: \"DEVICE\" must be a generic_http device");
 				return -1;
 			}
 		} else {
@@ -203,7 +203,7 @@ static void callback(int code, char *data, int size, char *type, void *userdata)
 	struct devices_t *dev = NULL;
 	struct JsonNode *jobj = NULL;
 	if (wnode != NULL && wnode->device != NULL && strlen(wnode->device) > 0) {
-		logprintf(LOG_DEBUG, "http action - Device: %s, Code: %i, Type: %s, Size: %i", wnode->device, code, type, size);
+		logprintf(LOG_DEBUG, "Http action - Device: %s, Code: %i, Type: %s, Size: %i", wnode->device, code, type, size);
 		if(devices_get(wnode->device, &dev) == 0) {
 			if(size > 290) {
 				logprintf(LOG_NOTICE, "http action response size %i is too big (limit is 290), response truncated", size);
@@ -395,7 +395,7 @@ void actionHttpInit(void) {
 #if defined(MODULE) && !defined(_WIN32)
 void compatibility(struct module_t *module) {
 	module->name = "http";
-	module->version = "0.5";
+	module->version = "0.3";
 	module->reqversion = "7.0";
 	module->reqcommit = "87";
 }
