@@ -97,7 +97,7 @@ If they don't exist yet, create subfolders for protocols and actions in /usr/loc
 	mkdir /usr/local/lib/pilight/protocols/
 	mkdir /usr/local/lib/pilight/actions/
 
-gcc -fPIC -shared lib/pilight/protocols/generic/generic_http.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http.so -DMODULE=1
+gcc -fPIC -shared libs/pilight/protocols/generic/generic_http.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http.so -DMODULE=1
  
 cp generic_http_result.so /usr/local/lib/pilight/protocols/
  
