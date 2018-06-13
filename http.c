@@ -202,7 +202,8 @@ static void callback(int code, char *data, int size, char *type, void *userdata)
 	struct settings_t *wnode = userdata;
 	struct devices_t *dev = NULL;
 	struct JsonNode *jobj = NULL;
-	if (wnode->device != NULL && strlen(wnode->device) > 0) {
+	if (wnode != NULL && wnode->device != NULL && strlen(wnode->device) > 0) {
+		logprintf(LOG_DEBUG, "http action - Device: %s, Code: %i, Type: %s, Size: %i", wnode->device, code, type, size);
 		if(devices_get(wnode->device, &dev) == 0) {
 			if(size > 290) {
 				logprintf(LOG_NOTICE, "http action response size %i is too big (limit is 290), response truncated", size);
@@ -210,10 +211,19 @@ static void callback(int code, char *data, int size, char *type, void *userdata)
 				logprintf(LOG_DEBUG, "truncated response to: \"%s\"", data);
 			}		
 			jobj = json_mkobject();
-			json_append_member(jobj, "data", json_mkstring(data));
+			if(size == 0) {
+				json_append_member(jobj, "data", json_mkstring(""));				
+			} else {
+				json_append_member(jobj, "data", json_mkstring(data));
+			}
 			json_append_member(jobj, "size", json_mknumber(size, 0));
+			if (type == NULL) {
+				json_append_member(jobj, "mimetype", json_mkstring(""));
+			} else {
+				json_append_member(jobj, "mimetype", json_mkstring(type));			
+			}
 			json_append_member(jobj, "code", json_mknumber(code, 0));
-			json_append_member(jobj, "mimetype", json_mkstring(type));
+
 			if(pilight.control != NULL) {
 				pilight.control(dev, "ready", json_first_child(jobj), ACTION);
 				json_delete(jobj);
@@ -385,7 +395,7 @@ void actionHttpInit(void) {
 #if defined(MODULE) && !defined(_WIN32)
 void compatibility(struct module_t *module) {
 	module->name = "http";
-	module->version = "0.4";
+	module->version = "0.5";
 	module->reqversion = "7.0";
 	module->reqcommit = "87";
 }
