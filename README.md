@@ -79,7 +79,7 @@ Install pilight manually from the staging branch, which is the code base for pil
 Make sure you are in the pilight directory.
 Clone this repository or download the individual source files to your system.
 Copy the source files to the proper piligh directory.
-Then compile them as modules.
+Then compile them as modules and finally copy the compilied modules to the appropriate pilight module directory.
 ```
 service pilight stop
 
@@ -92,6 +92,10 @@ cp /<path to downloaded source files>/generic_http.h libs/pilight/protocols/gene
 cp /<path to downloaded source files>/http.c libs/pilight/events/actions/
 
 cp /<path to downloaded source files>/http.h libs/pilight/events/actions/
+
+If they don't exist yet, create subfolders for protocols and actions in /usr/local/lib/pilight:
+	mkdir /usr/local/lib/pilight/protocols/
+	mkdir /usr/local/lib/pilight/actions/
 
 gcc -fPIC -shared lib/pilight/protocols/generic/generic_http.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http.so -DMODULE=1
  
