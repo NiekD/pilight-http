@@ -6,13 +6,13 @@ This addon will replace the webswitch protocol I published earlier.
 # http action
 The http action can be used in pilight rules to send HTTP POST or GET requests, either with or without parameters. 
 
-# generic_http_result protocol
-The state and the result of the request can optionally be stored in a generic_http_result device.
+# generic_http protocol
+The state and the result of the request can optionally be stored in a generic_http device.
 
 Configuration:
 ```
 "http_response": {
-			"protocol": [ "generic_http_result" ],
+			"protocol": [ "generic_http" ],
 			"id": [{
 				"id": 1
 			}],
@@ -31,18 +31,18 @@ Configuration:
 
 Note the difference between state and code. State doesn't tell if the http request was succesful, it just tells that the request is busy or ready. If state is "ready", you can use code to tell if the request succeeded or not.
 
-If you want to make other rules act upon the result of the http(s) request, you can use the state change of the generic_http_device to trigger those rules, just like you can do with the state of other devices. 
-The state will be either "busy" or "ready". The state changes to "busy"  when the http action starts and back to "ready" when the http action finishes. When the state is "ready", the generic_http_result device contains values related to the latest http request.
+If you want to make other rules act upon the result of the http(s) request, you can use the state change of the generic_http device to trigger those rules, just like you can do with the state of other devices. 
+The state will be either "busy" or "ready". The state changes to "busy"  when the http action starts and back to "ready" when the http action finishes. When the state is "ready", the generic_http device contains values related to the latest http request.
 
 
 ## Usage
 ```
-IF ... THEN http GET|POST <url> [PARAM <parameters>] [MIMETYPE <mimetype>] [DEVICE <generic_http_result device>]
+IF ... THEN http GET|POST <url> [PARAM <parameters>] [MIMETYPE <mimetype>] [DEVICE <generic_http device>]
 ```
 GET or POST  with url are mandatory, PARAM, MIMETYPE and DEVICE are optional.
 Url and parameters can be strings or device values or combinations of both.
 
-DEVICE must be a generic_http_result device.
+DEVICE must be a generic_http device.
 
 *N.B. A trailing slash (/) is required for the url if it refers to a path as shown in the examples below.*
 
@@ -85,15 +85,15 @@ service pilight stop
 
 cd /home/pi/pilight/
 
-cp /<path to downloaded source files>/generic_http_result.c libs/pilight/protocols/
+cp /<path to downloaded source files>/generic_http.c libs/pilight/protocols/generic/
 
-cp /<path to downloaded source files>/generic_http_result.h libs/pilight/protocols/
+cp /<path to downloaded source files>/generic_http.h libs/pilight/protocols/generic/
 
 cp /<path to downloaded source files>/http.c libs/pilight/events/actions/
 
 cp /<path to downloaded source files>/http.h libs/pilight/events/actions/
 
-gcc -fPIC -shared lib/pilight/protocols/generic_http_result.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http_result.so -DMODULE=1
+gcc -fPIC -shared lib/pilight/protocols/generic/generic_http.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http.so -DMODULE=1
  
 cp generic_http_result.so /usr/local/lib/pilight/protocols/
  
