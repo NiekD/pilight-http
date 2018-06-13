@@ -93,11 +93,11 @@ cp /<path to downloaded source files>/http.c libs/pilight/events/actions/
 
 cp /<path to downloaded source files>/http.h libs/pilight/events/actions/
 
-gcc -fPIC -shared generic_http_result.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http_result.so -DMODULE=1
+gcc -fPIC -shared lib/pilight/protocols/generic_http_result.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http_result.so -DMODULE=1
  
 cp generic_http_result.so /usr/local/lib/pilight/protocols/
  
-gcc -fPIC -shared http.c -Ilibs/pilight/events/ -Iinc/ -o http.so -DMODULE=1
+gcc -fPIC -shared libs/pilight/events/actions/http.c -Ilibs/pilight/events/ -Iinc/ -o http.so -DMODULE=1
  
 cp http.so /usr/local/lib/pilight/actions/ 
 
