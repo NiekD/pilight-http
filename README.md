@@ -76,18 +76,30 @@ Note that in pilight 8.1 you have to put strings containing dots (.) between quo
 All addons can be compiled as modules to be installed in the appropriate pilight folders. 
 Install pilight manually from the staging branch, which is the code base for pilight V8.1.
 
+Make sure you are in the pilight directory.
 Clone this repository or download the individual source files to your system.
+Copy the source files to the proper piligh directory.
 Then compile them as modules.
 ```
 service pilight stop
 
-gcc -fPIC -shared <folder containing source files>/generic_http_result.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http_result.so -DMODULE=1
+cd /home/pi/pilight/
+
+cp /<path to downloaded source files>/generic_http_result.c libs/pilight/protocols/
+
+cp /<path to downloaded source files>/generic_http_result.h libs/pilight/protocols/
+
+cp /<path to downloaded source files>/http.c libs/pilight/events/actions/
+
+cp /<path to downloaded source files>/http.h libs/pilight/events/actions/
+
+gcc -fPIC -shared generic_http_result.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http_result.so -DMODULE=1
  
-cp generic_http_result.so /usr/local/pilight/protocols/
+cp generic_http_result.so /usr/local/lib/pilight/protocols/
  
-gcc -fPIC -shared <folder containing source files>/http.c -Ilibs/pilight/events/ -Iinc/ -o http.so -DMODULE=1
+gcc -fPIC -shared http.c -Ilibs/pilight/events/ -Iinc/ -o http.so -DMODULE=1
  
-cp generic_http.so /usr/local/pilight/actions/ 
+cp http.so /usr/local/lib/pilight/actions/ 
 
 service pilight start
  
