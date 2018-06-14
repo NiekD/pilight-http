@@ -99,7 +99,7 @@ If they don't exist yet, create subfolders for protocols and actions in /usr/loc
 
 gcc -fPIC -shared libs/pilight/protocols/generic/generic_http.c -Ilibs/pilight/protocols/ -Iinc/ -o generic_http.so -DMODULE=1
  
-cp generic_http_result.so /usr/local/lib/pilight/protocols/
+cp generic_http.so /usr/local/lib/pilight/protocols/
  
 gcc -fPIC -shared libs/pilight/events/actions/http.c -Ilibs/pilight/events/ -Iinc/ -o http.so -DMODULE=1
  
