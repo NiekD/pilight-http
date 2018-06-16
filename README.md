@@ -42,6 +42,8 @@ IF ... THEN http GET|POST <url> [PARAM <parameters>] [MIMETYPE <mimetype>] [DEVI
 GET or POST  with url are mandatory, PARAM, MIMETYPE and DEVICE are optional.
 Url and parameters can be strings or device values or combinations of both.
 
+*N.B. the url does not accept ip addresses at this time. You can define hostnames in /etc/hosts for the ip addresses you want to use.
+
 DEVICE must be a generic_http device.
 
 *N.B. A trailing slash (/) is required for the url if it refers to a path as shown in the examples below.*
@@ -49,28 +51,28 @@ DEVICE must be a generic_http device.
 Some examples
 
 ```
-IF ... THEN http GET 'http://192.168.2.10/'
+IF ... THEN http GET http://myhost/
 
-IF ... THEN http GET http://url/path/page.html
+IF ... THEN http GET http://myhost/path/page.html
 
-IF ... THEN http POST 'https://192.168.2.10/' 
+IF ... THEN http POST https://myhost/ 
 
-IF ... THEN http GET 'http://192.168.2.10/test.cgi'
+IF ... THEN http GET http://myhost/test.cgi'
 
-IF ... THEN http GET 'http://192.168.2.10/' PARAM command=start&reply=yes
+IF ... THEN http GET http://myhost/ PARAM command=start&reply=yes
 
-IF ... THEN http 'GET http://192.168.2.10/' DEVICE myresult
+IF ... THEN http GET http://myhost/ DEVICE myresult
 
-IF ... THEN http GET 'http://192.168.2.10/' PARAM 'c=' . mysensor.state DEVICE myresult
+IF ... THEN http GET http://myhost/ PARAM 'c=' . mysensor.state DEVICE myresult
 
-IF ... THEN http GET 'http://192.168.2.10/' PARAM command=start MIMETYPE 'text/html' DEVICE myresult
+IF ... THEN http GET 'http://myhost/ PARAM command=start MIMETYPE 'text/html' DEVICE myresult
 
 IF myresult.state == ready THEN ...
 
 IF myresult.state == ready AND myresult.code == 200 THEN ...
 ```
 
-Note that in pilight 8.1 you have to put strings containing dots (.) between quotes and that strings and device values need to be concatenated using the concatenation character (.) 
+Note that in pilight 8.1 strings and device values need to be concatenated using the concatenation character (.) 
 
 ## Installation
 All addons can be compiled as modules to be installed in the appropriate pilight folders. 
