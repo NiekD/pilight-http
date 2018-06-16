@@ -65,7 +65,7 @@ IF ... THEN http GET http://myhost/ DEVICE myresult
 
 IF ... THEN http GET http://myhost/ PARAM 'c=' . mysensor.state DEVICE myresult
 
-IF ... THEN http GET 'http://myhost/ PARAM command=start MIMETYPE 'text/html' DEVICE myresult
+IF ... THEN http GET http://myhost/ PARAM command=start MIMETYPE 'text/html' DEVICE myresult
 
 IF myresult.state == ready THEN ...
 
